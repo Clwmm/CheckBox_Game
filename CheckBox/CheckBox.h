@@ -10,18 +10,19 @@
 class CheckBox
 {
 public:
-	std::shared_ptr<CheckBox> one = nullptr;
-	std::shared_ptr<CheckBox> two = nullptr;
-	std::shared_ptr<CheckBox> three = nullptr;
-	std::shared_ptr<CheckBox> four = nullptr;
-	std::shared_ptr<CheckBox> five = nullptr;
-	std::shared_ptr<CheckBox> six = nullptr;
-	std::shared_ptr<CheckBox> seven = nullptr;
-	std::shared_ptr<CheckBox> eight = nullptr;
-private:
+	CheckBox* one = nullptr;
+	CheckBox* two = nullptr;
+	CheckBox* three = nullptr;
+	CheckBox* four = nullptr;
+	CheckBox* five = nullptr;
+	CheckBox* six = nullptr;
+	CheckBox* seven = nullptr;
+	CheckBox* eight = nullptr;
+	
 	int generation = 0;
-	bool active = true;
+	bool active = false;
 
+private:
 	sf::Color outColor = sf::Color(227, 132, 255);
 	sf::Color inColor = sf::Color(134, 93, 255);
 
@@ -34,11 +35,11 @@ private:
 	sf::Color backgroundColor;
 	sf::Vector2f size;
 
-	std::vector<std::shared_ptr<CheckBox>>* boxes = nullptr;
+	std::vector<CheckBox*>* boxes = nullptr;
 public:
 	float distanceBetween = 0;
 
-	CheckBox(std::vector<std::shared_ptr<CheckBox>>& ptr, sf::Vector2f position, sf::Vector2f windowSize, sf::Color bcgColor, int gen, int noGen);
+	CheckBox(std::vector<CheckBox*>* ptr, sf::Vector2f position, sf::Vector2f windowSize, sf::Color bcgColor, int gen, int noGen);
 	void clicked(bool first);
 	void generateNextGen();
 	void resize(sf::Vector2f newWindowSize);
