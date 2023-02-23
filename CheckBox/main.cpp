@@ -25,13 +25,17 @@ int main()
     sf::Color backgroudColor = sf::Color(25, 24, 37);
 
     std::vector<CheckBox*>* boxes = new std::vector<CheckBox*>;
-    CheckBox* a = new CheckBox(boxes, sf::Vector2f(0, 0), sf::Vector2f(window.getSize().x, window.getSize().y), backgroudColor, 1, 3);
-    a->generateNextGen();
+    CheckBox* a = new CheckBox(boxes, sf::Vector2f(0, 0), sf::Vector2f(window.getSize().x, window.getSize().y), backgroudColor, 1, 4);
     boxes->push_back(a);
-    /*for (auto x : *boxes)
-        x->generateNextGen();*/
-    a->one->generateNextGen();
-    a->two->generateNextGen();
+
+    a->generateNextGen();
+    for (auto x : *boxes)
+        if (x->generation == 2)
+            x->generateNextGen();
+    for (auto x : *boxes)
+        if (x->generation == 3)
+            x->generateNextGen();
+       
 
     /*CheckBox* rand = *select_randomly(boxes->begin(), boxes->end());
     rand->active = true;

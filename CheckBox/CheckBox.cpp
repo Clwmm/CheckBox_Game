@@ -48,14 +48,14 @@ void CheckBox::clicked(bool first)
 		if (seven != nullptr)
 			seven->clicked(false);
 
-		if (one != nullptr)
+		/*if (one != nullptr)
 			one->clicked(false);
 		if (three != nullptr)
 			three->clicked(false);
 		if (six != nullptr)
 			six->clicked(false);
 		if (eight != nullptr)
-			eight->clicked(false);
+			eight->clicked(false);*/
 
 		active = !active;
 		this->updateColor();
@@ -87,6 +87,20 @@ void CheckBox::generateNextGen()
 		}
 		boxes->push_back(one);
 	}
+	else
+	{
+		one->eight = this;
+		if (this->two != nullptr)
+		{
+			one->five = two;
+			two->four = one;
+		}
+		if (this->four != nullptr)
+		{
+			one->seven = four;
+			four->two = one;
+		}
+	}
 
 	if (two == nullptr)
 	{
@@ -114,8 +128,31 @@ void CheckBox::generateNextGen()
 			two->eight = five;
 			five->one = two;
 		}
-
 		boxes->push_back(two);
+	}
+	else
+	{
+		two->seven = this;
+		if (this->one != nullptr)
+		{
+			two->four = one;
+			one->five = two;
+		}
+		if (this->three != nullptr)
+		{
+			two->five = three;
+			three->four = two;
+		}
+		if (this->four != nullptr)
+		{
+			two->six = four;
+			four->three = two;
+		}
+		if (this->five != nullptr)
+		{
+			two->eight = five;
+			five->one = two;
+		}
 	}
 
 	if (three == nullptr)
@@ -135,6 +172,20 @@ void CheckBox::generateNextGen()
 			five->two = three;
 		}
 		boxes->push_back(three);
+	}
+	else
+	{
+		three->six = this;
+		if (this->two != nullptr)
+		{
+			three->four = two;
+			two->five = three;
+		}
+		if (this->five != nullptr)
+		{
+			three->seven = five;
+			five->two = three;
+		}
 	}
 
 	if (four == nullptr)
@@ -165,6 +216,30 @@ void CheckBox::generateNextGen()
 		}
 		boxes->push_back(four);
 	}
+	else
+	{
+		four->five = this;
+		if (this->one != nullptr)
+		{
+			four->two = one;
+			one->seven = four;
+		}
+		if (this->six != nullptr)
+		{
+			four->seven = six;
+			six->two = four;
+		}
+		if (this->two != nullptr)
+		{
+			four->three = two;
+			two->six = four;
+		}
+		if (this->seven != nullptr)
+		{
+			four->eight = seven;
+			seven->one = four;
+		}
+	}
 
 	if (five == nullptr)
 	{
@@ -194,6 +269,30 @@ void CheckBox::generateNextGen()
 		}
 		boxes->push_back(five);
 	}
+	else
+	{
+		five->four = this;
+		if (this->three != nullptr)
+		{
+			five->two = three;
+			three->seven = five;
+		}
+		if (this->eight != nullptr)
+		{
+			five->seven = eight;
+			eight->two = five;
+		}
+		if (this->two != nullptr)
+		{
+			five->one = two;
+			two->eight = five;
+		}
+		if (this->seven != nullptr)
+		{
+			five->six = seven;
+			seven->three = five;
+		}
+	}
 
 	if (six == nullptr)
 	{
@@ -212,6 +311,20 @@ void CheckBox::generateNextGen()
 			seven->four = six;
 		}
 		boxes->push_back(six);
+	}
+	else
+	{
+		six->three = this;
+		if (this->four != nullptr)
+		{
+			six->two = four;
+			four->seven = six;
+		}
+		if (this->seven != nullptr)
+		{
+			six->five = seven;
+			seven->four = six;
+		}
 	}
 
 	if (seven == nullptr)
@@ -242,6 +355,30 @@ void CheckBox::generateNextGen()
 		}
 		boxes->push_back(seven);
 	}
+	else
+	{
+		seven->two = this;
+		if (this->six != nullptr)
+		{
+			seven->four = six;
+			six->five = seven;
+		}
+		if (this->eight != nullptr)
+		{
+			seven->five = eight;
+			eight->four = seven;
+		}
+		if (this->four != nullptr)
+		{
+			seven->one = four;
+			four->eight = seven;
+		}
+		if (this->five != nullptr)
+		{
+			seven->three = five;
+			five->six = seven;
+		}
+	}
 
 	if (eight == nullptr)
 	{
@@ -260,6 +397,20 @@ void CheckBox::generateNextGen()
 			five->seven = eight;
 		}
 		boxes->push_back(eight);
+	}
+	else
+	{
+		eight->one = this;
+		if (this->seven != nullptr)
+		{
+			eight->four = seven;
+			seven->five = eight;
+		}
+		if (this->five != nullptr)
+		{
+			eight->two = five;
+			five->seven = eight;
+		}
 	}
 }
 
