@@ -3,6 +3,7 @@
 #include "CheckBox.h"
 #include  <random>
 #include  <iterator>
+#include <Windows.h>
 
 template<typename Iter, typename RandomGenerator>
 Iter select_randomly(Iter start, Iter end, RandomGenerator& g) {
@@ -20,20 +21,26 @@ Iter select_randomly(Iter start, Iter end) {
 
 int main()
 {
+    FreeConsole();
+
     sf::Vector2f screenSize = sf::Vector2f(800, 800);
 
-    sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Window Title");
+    sf::RenderWindow window(sf::VideoMode(static_cast<unsigned int>(screenSize.x), static_cast<unsigned int>(screenSize.y)), "Check Box Game");
     window.setFramerateLimit(30);
 
     sf::View view(sf::Vector2f(screenSize.x/2, screenSize.y/2), sf::Vector2f(screenSize.x, screenSize.y));
     window.setView(view);
+
+    sf::Image icon;
+    icon.loadFromFile("res/check.png");
+    window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
     sf::Color backgroudColor = sf::Color(25, 24, 37);
 
 
     int noGen = 1;
     std::vector<CheckBox*>* boxes = new std::vector<CheckBox*>;
-    CheckBox* a = new CheckBox(boxes, view.getCenter(), sf::Vector2f(static_cast<float>(view.getSize().x), static_cast<float>(view.getSize().y)), backgroudColor, 1, noGen, true);
+    CheckBox* a = new CheckBox(boxes, view.getSize(), view.getCenter(), sf::Vector2i(0, 0), backgroudColor, 1, noGen);
     boxes->push_back(a);
 
     for (int i = 0; i < noGen; i++)
@@ -81,12 +88,9 @@ int main()
                 break;
                 
             case sf::Event::Resized:
-                view.setSize(sf::Vector2f(event.size.width, event.size.height));
-                /*for (auto x : *boxes)
-                    x->resize(sf::Vector2f(static_cast<float>(event.size.width), static_cast<float>(event.size.height)), view.getCenter(), true);*/
-                a->resize(sf::Vector2f(static_cast<float>(event.size.width), static_cast<float>(event.size.height)), view.getCenter(), true);
+                view.setSize(sf::Vector2f(static_cast<float>(event.size.width), static_cast<float>(event.size.height)));
                 for (auto x : *boxes)
-                    x->resized = false;
+                    x->resize(view.getSize());
                 break;
 
             case sf::Event::KeyPressed:
@@ -96,13 +100,39 @@ int main()
                     window.close();
                     break;
                     
+                case sf::Keyboard::R:
+                    for (auto p : *boxes)
+                    {
+                        p->active = false;
+                        p->updateColor();
+                    }
+                    break;
+
                 case sf::Keyboard::E:
                     for (auto p : *boxes)
                         delete p;
                     boxes->clear();
                     noGen++;
                     {
-                        CheckBox* num1 = new CheckBox(boxes, view.getCenter(), sf::Vector2f(static_cast<float>(view.getSize().x), static_cast<float>(view.getSize().y)), backgroudColor, 1, noGen, true);
+                        CheckBox* num1 = new CheckBox(boxes, view.getSize(), view.getCenter(), sf::Vector2i(0, 0), backgroudColor, 1, noGen);
+                        boxes->push_back(num1);
+
+                        for (int i = 0; i < noGen; i++)
+                            for (auto x : *boxes)
+                                if (x->generation == i)
+                                    x->generateNextGen();
+                    }
+
+                    break;
+
+                case sf::Keyboard::Q:
+                    for (auto p : *boxes)
+                        delete p;
+                    boxes->clear();
+                    if (noGen > 1)
+                        noGen--;
+                    {
+                        CheckBox* num1 = new CheckBox(boxes, view.getSize(), view.getCenter(), sf::Vector2i(0, 0), backgroudColor, 1, noGen);
                         boxes->push_back(num1);
 
                         for (int i = 0; i < noGen; i++)
@@ -139,7 +169,7 @@ int main()
 ToDo:
     clearing vector without memory leaks [done]
     create game class
-    resizing boxes when window is resized
+    resizing boxes when window is resized [done]
 
     features:
         when level is cleared animate boxes and create new ones with animation
