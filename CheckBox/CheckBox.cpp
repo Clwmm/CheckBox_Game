@@ -1,18 +1,27 @@
 #include "CheckBox.h"
 
-CheckBox::CheckBox(std::vector<CheckBox*>* ptr, sf::Vector2f position, sf::Vector2f windowSize, sf::Color bcgColor, int gen, int noGen)
-	:boxes{ ptr }, pos{ position }, backgroundColor{ bcgColor }, generation{ gen }
+CheckBox::CheckBox(std::vector<CheckBox*>* ptr, sf::Vector2f position, sf::Vector2f windowSize, sf::Color bcgColor, int gen, int _noGen, bool first)
+	:boxes{ ptr }, pos{ position }, backgroundColor{ bcgColor }, generation{ gen }, noGen{_noGen}
 {
-	out.setOutlineThickness(2);
+	if (noGen <= 6)
+		out.setOutlineThickness(2);
+	else
+		out.setOutlineThickness(1);
 	fill.setFillColor(backgroundColor);
 	in.setFillColor(inColor);
 	
 
-	if (pos.x == 0)
+	if (first)
 	{
-		pos.x = windowSize.x / 2;
-		pos.y = windowSize.y / 2;
-		distanceBetween = windowSize.x * 0.05;
+		pos = position;
+		if(noGen <= 2)
+			distanceBetween = windowSize.x * 0.05;
+		else if (noGen <= 8)
+			distanceBetween = windowSize.x * 0.01;
+		else if (noGen <= 13)
+			distanceBetween = 5;
+		else
+			distanceBetween = 3;
 		int noBox = 1;
 		for (int i = 0; i < noGen - 1; i++)
 			noBox += 2;
@@ -72,7 +81,7 @@ void CheckBox::generateNextGen()
 	if (one == nullptr)
 	{
 		sf::Vector2f tempPos = sf::Vector2f(pos.x - size.x - distanceBetween, pos.y - size.x - distanceBetween);
-		one = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, 0);
+		one = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, noGen, false);
 		one->distanceBetween = this->distanceBetween;
 		one->eight = this;
 		if (this->two != nullptr)
@@ -105,7 +114,7 @@ void CheckBox::generateNextGen()
 	if (two == nullptr)
 	{
 		sf::Vector2f tempPos = sf::Vector2f(pos.x, pos.y - size.x - distanceBetween);
-		two = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, 0);
+		two = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, noGen, false);
 		two->distanceBetween = this->distanceBetween;
 		two->seven = this;
 		if (this->one != nullptr)
@@ -158,7 +167,7 @@ void CheckBox::generateNextGen()
 	if (three == nullptr)
 	{
 		sf::Vector2f tempPos = sf::Vector2f(pos.x + size.x + distanceBetween, pos.y - size.x - distanceBetween);
-		three = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, 0);
+		three = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, noGen, false);
 		three->distanceBetween = this->distanceBetween;
 		three->six = this;
 		if (this->two != nullptr)
@@ -191,7 +200,7 @@ void CheckBox::generateNextGen()
 	if (four == nullptr)
 	{
 		sf::Vector2f tempPos = sf::Vector2f(pos.x - size.x - distanceBetween, pos.y);
-		four = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, 0);
+		four = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, noGen, false);
 		four->distanceBetween = this->distanceBetween;
 		four->five = this;
 		if (this->one != nullptr)
@@ -244,7 +253,7 @@ void CheckBox::generateNextGen()
 	if (five == nullptr)
 	{
 		sf::Vector2f tempPos = sf::Vector2f(pos.x + size.x + distanceBetween, pos.y);
-		five = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, 0);
+		five = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, noGen, false);
 		five->distanceBetween = this->distanceBetween;
 		five->four = this;
 		if (this->three != nullptr)
@@ -297,7 +306,7 @@ void CheckBox::generateNextGen()
 	if (six == nullptr)
 	{
 		sf::Vector2f tempPos = sf::Vector2f(pos.x - size.x - distanceBetween, pos.y + size.x + distanceBetween);
-		six = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, 0);
+		six = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, noGen, false);
 		six->distanceBetween = this->distanceBetween;
 		six->three = this;
 		if (this->four != nullptr)
@@ -330,7 +339,7 @@ void CheckBox::generateNextGen()
 	if (seven == nullptr)
 	{
 		sf::Vector2f tempPos = sf::Vector2f(pos.x, pos.y + size.x + distanceBetween);
-		seven = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, 0);
+		seven = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, noGen, false);
 		seven->distanceBetween = this->distanceBetween;
 		seven->two = this;
 		if (this->six != nullptr)
@@ -383,7 +392,7 @@ void CheckBox::generateNextGen()
 	if (eight == nullptr)
 	{
 		sf::Vector2f tempPos = sf::Vector2f(pos.x + size.x + distanceBetween, pos.y + size.x + distanceBetween);
-		eight = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, 0);
+		eight = new CheckBox(boxes, tempPos, size, backgroundColor, generation + 1, noGen, false);
 		eight->distanceBetween = this->distanceBetween;
 		eight->one = this;
 		if (this->seven != nullptr)
@@ -414,8 +423,128 @@ void CheckBox::generateNextGen()
 	}
 }
 
-void CheckBox::resize(sf::Vector2f newWindowSize)
+void CheckBox::resize(sf::Vector2f newWindowSize, sf::Vector2f centerPos, bool first)
 {
+	if (!resized)
+	{
+		if (first)
+		{
+			pos = centerPos;
+			if (noGen <= 4)
+				distanceBetween = newWindowSize.x * 0.05;
+			else if (noGen <= 8)
+				distanceBetween = newWindowSize.x * 0.01;
+			else if (noGen <= 13)
+				distanceBetween = 5;
+			else
+				distanceBetween = 3;
+			int noBox = 1;
+			for (int i = 0; i < noGen - 1; i++)
+				noBox += 2;
+			if (newWindowSize.y >= newWindowSize.x)
+			{
+				size.x = (newWindowSize.x - (distanceBetween * noBox)) / noBox;
+				size.y = (newWindowSize.x - (distanceBetween * noBox)) / noBox;
+			}
+			else
+			{
+				size.x = (newWindowSize.y - (distanceBetween * noBox)) / noBox;
+				size.y = (newWindowSize.y - (distanceBetween * noBox)) / noBox;
+			}
+
+			if (one != nullptr)
+			{
+				one->distanceBetween = this->distanceBetween;
+				one->resize(size, sf::Vector2f(pos.x - size.x - distanceBetween, pos.y - size.x - distanceBetween), false);
+			}
+				
+			if (two != nullptr)
+			{
+				two->distanceBetween = this->distanceBetween;
+				two->resize(size, sf::Vector2f(pos.x, pos.y - size.x - distanceBetween), false);
+			}
+				
+			if (three != nullptr)
+			{
+				three->distanceBetween = this->distanceBetween;
+				three->resize(size, sf::Vector2f(pos.x + size.x + distanceBetween, pos.y - size.x - distanceBetween), false);
+			}
+				
+			if (four != nullptr)
+			{
+				four->distanceBetween = this->distanceBetween;
+				four->resize(size, sf::Vector2f(pos.x - size.x - distanceBetween, pos.y), false);
+			}
+				
+			if (five != nullptr)
+			{
+				five->distanceBetween = this->distanceBetween;
+				five->resize(size, sf::Vector2f(pos.x + size.x + distanceBetween, pos.y), false);
+			}
+				
+			if (six != nullptr)
+			{
+				six->distanceBetween = this->distanceBetween;
+				six->resize(size, sf::Vector2f(pos.x - size.x - distanceBetween, pos.y + size.x + distanceBetween), false);
+			}
+				
+			if (seven != nullptr)
+			{
+				seven->distanceBetween = this->distanceBetween;
+				seven->resize(size, sf::Vector2f(pos.x, pos.y + size.x + distanceBetween), false);
+			}
+				
+			if (eight != nullptr)
+			{
+				eight->distanceBetween = this->distanceBetween;
+				eight->resize(size, sf::Vector2f(pos.x + size.x + distanceBetween, pos.y + size.x + distanceBetween), false);
+			}
+				
+		}
+		else
+		{
+			size = newWindowSize;
+			pos = centerPos;
+			/*if (one != nullptr)
+				one->resize(size, sf::Vector2f(pos.x - size.x - distanceBetween, pos.y - size.x - distanceBetween), false);
+			if (two != nullptr)
+				two->resize(size, sf::Vector2f(pos.x, pos.y - size.x - distanceBetween), false);
+			if (three != nullptr)
+				three->resize(size, sf::Vector2f(pos.x + size.x + distanceBetween, pos.y - size.x - distanceBetween), false);
+			if (four != nullptr)
+				four->resize(size, sf::Vector2f(pos.x - size.x - distanceBetween, pos.y), false);
+			if (five != nullptr)
+				five->resize(size, sf::Vector2f(pos.x + size.x + distanceBetween, pos.y), false);
+			if (six != nullptr)
+				six->resize(size, sf::Vector2f(pos.x - size.x - distanceBetween, pos.y + size.x + distanceBetween), false);
+			if (seven != nullptr)
+				seven->resize(size, sf::Vector2f(pos.x, pos.y + size.x + distanceBetween), false);
+			if (eight != nullptr)
+				eight->resize(size, sf::Vector2f(pos.x + size.x + distanceBetween, pos.y + size.x + distanceBetween), false);*/
+		}
+
+		resized = true;
+		updatePosSize();
+	}
+	/*else
+	{
+		if (one != nullptr)
+			one->resize(size, sf::Vector2f(pos.x - size.x - distanceBetween, pos.y - size.x - distanceBetween), false);
+		if (two != nullptr)
+			two->resize(size, sf::Vector2f(pos.x, pos.y - size.x - distanceBetween), false);
+		if (three != nullptr)
+			three->resize(size, sf::Vector2f(pos.x + size.x + distanceBetween, pos.y - size.x - distanceBetween), false);
+		if (four != nullptr)
+			four->resize(size, sf::Vector2f(pos.x - size.x - distanceBetween, pos.y), false);
+		if (five != nullptr)
+			five->resize(size, sf::Vector2f(pos.x + size.x + distanceBetween, pos.y), false);
+		if (six != nullptr)
+			six->resize(size, sf::Vector2f(pos.x - size.x - distanceBetween, pos.y + size.x + distanceBetween), false);
+		if (seven != nullptr)
+			seven->resize(size, sf::Vector2f(pos.x, pos.y + size.x + distanceBetween), false);
+		if (eight != nullptr)
+			eight->resize(size, sf::Vector2f(pos.x + size.x + distanceBetween, pos.y + size.x + distanceBetween), false);
+	}*/
 }
 
 void CheckBox::draw(sf::RenderWindow& window)

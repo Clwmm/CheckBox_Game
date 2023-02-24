@@ -21,8 +21,10 @@ public:
 	
 	int generation = 0;
 	bool active = false;
+	bool resized = false;
 
 private:
+	int noGen = 0;
 	sf::Color outColor = sf::Color(227, 132, 255);
 	sf::Color inColor = sf::Color(134, 93, 255);
 
@@ -39,10 +41,10 @@ private:
 public:
 	float distanceBetween = 0;
 
-	CheckBox(std::vector<CheckBox*>* ptr, sf::Vector2f position, sf::Vector2f windowSize, sf::Color bcgColor, int gen, int noGen);
+	CheckBox(std::vector<CheckBox*>* ptr, sf::Vector2f position, sf::Vector2f windowSize, sf::Color bcgColor, int gen, int _noGen, bool first);
 	void clicked(bool first);
 	void generateNextGen();
-	void resize(sf::Vector2f newWindowSize);
+	void resize(sf::Vector2f newWindowSize, sf::Vector2f centerPos, bool first);
 	void draw(sf::RenderWindow& window);
 	void updatePosSize();
 	void updateColor();

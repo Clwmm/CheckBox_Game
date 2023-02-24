@@ -20,21 +20,32 @@ Iter select_randomly(Iter start, Iter end) {
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 800), "Window Title");
+    sf::Vector2f screenSize = sf::Vector2f(800, 800);
+
+    sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Window Title");
     window.setFramerateLimit(30);
+
+    sf::View view(sf::Vector2f(screenSize.x/2, screenSize.y/2), sf::Vector2f(screenSize.x, screenSize.y));
+    window.setView(view);
+
     sf::Color backgroudColor = sf::Color(25, 24, 37);
 
+
+    int noGen = 1;
     std::vector<CheckBox*>* boxes = new std::vector<CheckBox*>;
-    CheckBox* a = new CheckBox(boxes, sf::Vector2f(0, 0), sf::Vector2f(window.getSize().x, window.getSize().y), backgroudColor, 1, 4);
+    CheckBox* a = new CheckBox(boxes, view.getCenter(), sf::Vector2f(static_cast<float>(view.getSize().x), static_cast<float>(view.getSize().y)), backgroudColor, 1, noGen, true);
     boxes->push_back(a);
 
-    a->generateNextGen();
-    for (auto x : *boxes)
-        if (x->generation == 2)
-            x->generateNextGen();
-    for (auto x : *boxes)
-        if (x->generation == 3)
-            x->generateNextGen();
+    for (int i = 0; i < noGen; i++)
+        for (auto x : *boxes)
+            if (x->generation == i)
+            {
+                x->generateNextGen();
+                /*window.clear(backgroudColor);
+                for (auto x : *boxes)
+                    x->draw(window);
+                window.display();*/
+            }
        
 
     /*CheckBox* rand = *select_randomly(boxes->begin(), boxes->end());
@@ -70,9 +81,41 @@ int main()
                 break;
                 
             case sf::Event::Resized:
+                view.setSize(sf::Vector2f(event.size.width, event.size.height));
+                /*for (auto x : *boxes)
+                    x->resize(sf::Vector2f(static_cast<float>(event.size.width), static_cast<float>(event.size.height)), view.getCenter(), true);*/
+                a->resize(sf::Vector2f(static_cast<float>(event.size.width), static_cast<float>(event.size.height)), view.getCenter(), true);
                 for (auto x : *boxes)
-                    x->resize(sf::Vector2f(event.size.width, event.size.height));
+                    x->resized = false;
                 break;
+
+            case sf::Event::KeyPressed:
+                switch (event.key.code)
+                {
+                case sf::Keyboard::Escape:
+                    window.close();
+                    break;
+                    
+                case sf::Keyboard::E:
+                    for (auto p : *boxes)
+                        delete p;
+                    boxes->clear();
+                    noGen++;
+                    {
+                        CheckBox* num1 = new CheckBox(boxes, view.getCenter(), sf::Vector2f(static_cast<float>(view.getSize().x), static_cast<float>(view.getSize().y)), backgroudColor, 1, noGen, true);
+                        boxes->push_back(num1);
+
+                        for (int i = 0; i < noGen; i++)
+                            for (auto x : *boxes)
+                                if (x->generation == i)
+                                    x->generateNextGen();
+                    }
+
+                    break;
+
+                default:
+                    break;
+                }
 
             default:
                 break;
@@ -82,7 +125,7 @@ int main()
         }
 
 
-
+        window.setView(view);
         window.clear(backgroudColor); // Color background
         for (auto x : *boxes)
             x->draw(window);
@@ -94,7 +137,7 @@ int main()
 
 /*
 ToDo:
-    clearing vector without memory leaks
+    clearing vector without memory leaks [done]
     create game class
     resizing boxes when window is resized
 
