@@ -3,7 +3,8 @@
 #include "CheckBox.h"
 #include  <random>
 #include  <iterator>
-#include <Windows.h>
+#include <Windows.h>]
+#include "Game.h"
 
 template<typename Iter, typename RandomGenerator>
 Iter select_randomly(Iter start, Iter end, RandomGenerator& g) {
@@ -23,10 +24,15 @@ int main()
 {
     FreeConsole();
 
+    Game* game = new Game;
+    game->init();
+    delete game;
+    return 0;
+
     sf::Vector2f screenSize = sf::Vector2f(800, 800);
 
     sf::RenderWindow window(sf::VideoMode(static_cast<unsigned int>(screenSize.x), static_cast<unsigned int>(screenSize.y)), "Check Box Game");
-    window.setFramerateLimit(30);
+    window.setFramerateLimit(120);
 
     sf::View view(sf::Vector2f(screenSize.x/2, screenSize.y/2), sf::Vector2f(screenSize.x, screenSize.y));
     window.setView(view);
@@ -37,7 +43,8 @@ int main()
 
     sf::Color backgroudColor = sf::Color(25, 24, 37);
 
-
+    bool win = true;
+    bool close = false;
     int noGen = 1;
     std::vector<CheckBox*>* boxes = new std::vector<CheckBox*>;
     CheckBox* a = new CheckBox(boxes, view.getSize(), view.getCenter(), sf::Vector2i(0, 0), backgroudColor, 1, noGen);
@@ -59,7 +66,10 @@ int main()
     rand->active = true;
     rand->updateColor();*/
 
-    while (window.isOpen())
+    sf::Clock deltaClock;
+    float deltaTime = 0;
+
+    while (window.isOpen() && !close)
     {
         sf::Event event;
         while (window.pollEvent(event))
@@ -153,14 +163,28 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-
-
+        deltaTime = deltaClock.restart().asSeconds();
+        win = true;
+        for (auto x : *boxes)
+            if (!x->active)
+                win = false;
+        
         window.setView(view);
         window.clear(backgroudColor); // Color background
         for (auto x : *boxes)
+        {
+            if (win)
+                if (x->sinAnim(deltaTime))
+                    close = true;
             x->draw(window);
+        }
         window.display();
     }
+
+    for (auto p : *boxes)
+        delete p;
+    boxes->clear();
+    delete boxes;
 
     return 0;
 }
@@ -168,10 +192,10 @@ int main()
 /*
 ToDo:
     clearing vector without memory leaks [done]
-    create game class
+    create game class [done]
     resizing boxes when window is resized [done]
 
     features:
-        when level is cleared animate boxes and create new ones with animation
+        when level is cleared animate boxes and create new ones with animation [done only with clearing]
 
 */

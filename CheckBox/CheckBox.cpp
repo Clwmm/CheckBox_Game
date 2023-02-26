@@ -488,3 +488,30 @@ void CheckBox::updateColor()
 		out.setOutlineColor(outColor);
 	}
 }
+
+bool CheckBox::sinAnim(float deltatime)
+{
+	if (sinDouble <= 2.355)
+	{
+		sf::Vector2f tempsize = size;
+		sinDouble += static_cast<double>(deltatime) * 20.0f;
+		size = sf::Vector2f(size.x + (sin(sinDouble) * 15), size.x + (sin(sinDouble) * 15));
+		updatePosSize();
+		size = tempsize;
+		return false;
+	}
+	else
+	{
+		size = sf::Vector2f(size.x - (deltatime * 2000), size.x - (deltatime * 2000));
+		if (size.x <= 0)
+		{
+			size.x == 0;
+			size.y == 0;
+		}
+		updatePosSize();
+
+		if (size.x <= 0)
+			return true;
+		return false;
+	}
+}

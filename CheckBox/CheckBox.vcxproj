@@ -152,10 +152,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CheckBox.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CheckBox.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

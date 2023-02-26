@@ -41,6 +41,8 @@ private:
 	sf::Color backgroundColor;
 	sf::Vector2f size;
 
+	double sinDouble = 0;
+
 	std::vector<CheckBox*>* boxes = nullptr;
 public:
 	CheckBox(std::vector<CheckBox*>* ptr, sf::Vector2f windowSize, sf::Vector2f _centerPos, sf::Vector2i _index, sf::Color bcgColor, int gen, int _noGen);
@@ -53,5 +55,7 @@ public:
 	void draw(sf::RenderWindow& window);
 	void updatePosSize();
 	void updateColor();
+
+	bool sinAnim(float deltatime);
 };
 
