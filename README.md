@@ -2,7 +2,8 @@
 
 - Simple logic game. - Created using C++ 14 and SFML 2.5.1
 - Infinity levels
-- Your goal is to check all the boxes
+- Your goal is to check all the boxes (it's not as easy as it sounds)
+- No one has passed level 3 yet! (I don't know if this is possible)
 
 ## Screenshots
 | From this | To this |
