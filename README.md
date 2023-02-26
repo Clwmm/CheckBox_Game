@@ -5,10 +5,12 @@
 - Your goal is to check all the boxes
 
 ## Screenshots
-| | | |
-| ------ | ------ | ------ |
-| ![Photo](https://github.com/Clwmm/CheckBox_Game/blob/master/CheckBox/res/1.png) | -> | ![Photo](https://github.com/Clwmm/CheckBox_Game/blob/master/CheckBox/res/2.png) |
+| From this | To this |
+| ------ | ------ |
+| ![Photo](https://github.com/Clwmm/CheckBox_Game/blob/master/CheckBox/res/1.png) | ![Photo](https://github.com/Clwmm/CheckBox_Game/blob/master/CheckBox/res/2.png) |
 
 ## Controls
+| KEY | Function |
+| ------ | ------ |
 | R | Restart |
 | ESC | Exit |
