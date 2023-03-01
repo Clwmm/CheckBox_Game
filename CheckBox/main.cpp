@@ -3,7 +3,7 @@
 #include "CheckBox.h"
 #include  <random>
 #include  <iterator>
-#include <Windows.h>]
+#include <Windows.h>
 #include "Game.h"
 
 template<typename Iter, typename RandomGenerator>
@@ -22,17 +22,10 @@ Iter select_randomly(Iter start, Iter end) {
 
 int main()
 {
-    FreeConsole();
-
-    Game* game = new Game;
-    game->init();
-    delete game;
-    return 0;
-
     sf::Vector2f screenSize = sf::Vector2f(800, 800);
 
     sf::RenderWindow window(sf::VideoMode(static_cast<unsigned int>(screenSize.x), static_cast<unsigned int>(screenSize.y)), "Check Box Game");
-    window.setFramerateLimit(120);
+    window.setFramerateLimit(0);
 
     sf::View view(sf::Vector2f(screenSize.x/2, screenSize.y/2), sf::Vector2f(screenSize.x, screenSize.y));
     window.setView(view);
@@ -45,148 +38,289 @@ int main()
 
     bool win = true;
     bool close = false;
-    int noGen = 1;
+    int noGen = 3;
     std::vector<CheckBox*>* boxes = new std::vector<CheckBox*>;
-    CheckBox* a = new CheckBox(boxes, view.getSize(), view.getCenter(), sf::Vector2i(0, 0), backgroudColor, 1, noGen);
+    CheckBox* a = new CheckBox(boxes, screenSize, view.getCenter(), sf::Vector2i(0, 0), backgroudColor, 1, noGen);
     boxes->push_back(a);
 
     for (int i = 0; i < noGen; i++)
         for (auto x : *boxes)
             if (x->generation == i)
-            {
                 x->generateNextGen();
-                /*window.clear(backgroudColor);
-                for (auto x : *boxes)
-                    x->draw(window);
-                window.display();*/
-            }
-       
-
-    /*CheckBox* rand = *select_randomly(boxes->begin(), boxes->end());
-    rand->active = true;
-    rand->updateColor();*/
 
     sf::Clock deltaClock;
     float deltaTime = 0;
+    unsigned int iter = 0;
+    double time = 0;
 
-    while (window.isOpen() && !close)
+    bool withDisplay = false;
+
+    sf::Event event;
+
+    if (withDisplay)
     {
-        sf::Event event;
-        while (window.pollEvent(event))
+        while (window.isOpen())
         {
-
-            if (event.type == sf::Event::MouseButtonPressed)
+            while (window.pollEvent(event))
             {
-                if (event.mouseButton.button == sf::Mouse::Left)
+
+                if (event.type == sf::Event::MouseButtonPressed)
                 {
-                    sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
-                    sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
-                    for (auto x : *boxes)
+                    if (event.mouseButton.button == sf::Mouse::Left)
                     {
-                        sf::FloatRect rect(x->out.getPosition().x - (x->out.getSize().x/2), x->out.getPosition().y - (x->out.getSize().x / 2), x->out.getSize().x, x->out.getSize().y);
-                        if (rect.contains(worldPos))
-                            x->clicked(true);
-                            
+                        sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
+                        sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
+                        for (auto x : *boxes)
+                        {
+                            sf::FloatRect rect(x->out.getPosition().x - (x->out.getSize().x / 2), x->out.getPosition().y - (x->out.getSize().x / 2), x->out.getSize().x, x->out.getSize().y);
+                            if (rect.contains(worldPos))
+                                x->clicked(true);
+
+                        }
                     }
                 }
-            }
-
-            switch (event.type)
-            {
-            case sf::Event::Closed:
-                window.close();
-                break;
-                
-            case sf::Event::Resized:
-                view.setSize(sf::Vector2f(static_cast<float>(event.size.width), static_cast<float>(event.size.height)));
-                for (auto x : *boxes)
-                    x->resize(view.getSize());
-                break;
-
-            case sf::Event::KeyPressed:
-                switch (event.key.code)
+                switch (event.type)
                 {
-                case sf::Keyboard::Escape:
+                case sf::Event::Closed:
                     window.close();
                     break;
-                    
-                case sf::Keyboard::R:
-                    for (auto p : *boxes)
+
+                case sf::Event::KeyPressed:
+                    switch (event.key.code)
                     {
-                        p->active = false;
-                        p->updateColor();
+                    case sf::Keyboard::Escape:
+                        window.close();
+                        break;
+                    default:
+                        break;
                     }
-                    break;
-
-                case sf::Keyboard::E:
-                    for (auto p : *boxes)
-                        delete p;
-                    boxes->clear();
-                    noGen++;
-                    {
-                        CheckBox* num1 = new CheckBox(boxes, view.getSize(), view.getCenter(), sf::Vector2i(0, 0), backgroudColor, 1, noGen);
-                        boxes->push_back(num1);
-
-                        for (int i = 0; i < noGen; i++)
-                            for (auto x : *boxes)
-                                if (x->generation == i)
-                                    x->generateNextGen();
-                    }
-
-                    break;
-
-                case sf::Keyboard::Q:
-                    for (auto p : *boxes)
-                        delete p;
-                    boxes->clear();
-                    if (noGen > 1)
-                        noGen--;
-                    {
-                        CheckBox* num1 = new CheckBox(boxes, view.getSize(), view.getCenter(), sf::Vector2i(0, 0), backgroudColor, 1, noGen);
-                        boxes->push_back(num1);
-
-                        for (int i = 0; i < noGen; i++)
-                            for (auto x : *boxes)
-                                if (x->generation == i)
-                                    x->generateNextGen();
-                    }
-
-                    break;
-
                 default:
                     break;
                 }
-
-            default:
-                break;
             }
-            if (event.type == sf::Event::Closed)
-                window.close();
+
+            if (!close)
+            {
+                time += deltaClock.restart().asSeconds();
+                CheckBox* rand = *select_randomly(boxes->begin(), boxes->end());
+                rand->clicked(true);
+
+                win = true;
+                for (auto x : *boxes)
+                    if (!x->active)
+                        win = false;
+                iter++;
+                if (win)
+                {
+                    std::cout << "Time: " << time << " s" << std::endl;
+                    std::cout << "Nr iter: " << iter << std::endl;
+                    close = true;
+                }
+                    
+            }
+
+            window.setView(view);
+            window.clear(backgroudColor); // Color background
+            for (auto x : *boxes)
+                x->draw(window);
+            window.display();
         }
-        deltaTime = deltaClock.restart().asSeconds();
+    }
+    else
+    {
+        while (!close)
+    {
+        time += deltaClock.restart().asSeconds();
+        CheckBox* rand = *select_randomly(boxes->begin(), boxes->end());
+        rand->clicked(true);
+
         win = true;
         for (auto x : *boxes)
             if (!x->active)
                 win = false;
-        
-        window.setView(view);
-        window.clear(backgroudColor); // Color background
-        for (auto x : *boxes)
-        {
-            if (win)
-                if (x->sinAnim(deltaTime))
-                    close = true;
-            x->draw(window);
-        }
-        window.display();
+        iter++;
+        if (win)
+            close = true;
     }
+        std::cout << "Time: " << time << " s" << std::endl;
+        std::cout << "Nr iter: " << iter << std::endl;
+
+
+        while (window.isOpen())
+        {
+            while (window.pollEvent(event))
+            {
+
+                if (event.type == sf::Event::MouseButtonPressed)
+                {
+                    if (event.mouseButton.button == sf::Mouse::Left)
+                    {
+                        sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
+                        sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
+                        for (auto x : *boxes)
+                        {
+                            sf::FloatRect rect(x->out.getPosition().x - (x->out.getSize().x / 2), x->out.getPosition().y - (x->out.getSize().x / 2), x->out.getSize().x, x->out.getSize().y);
+                            if (rect.contains(worldPos))
+                                x->clicked(true);
+
+                        }
+                    }
+                }
+                switch (event.type)
+                {
+                case sf::Event::Closed:
+                    window.close();
+                    break;
+
+                case sf::Event::KeyPressed:
+                    switch (event.key.code)
+                    {
+                    case sf::Keyboard::Escape:
+                        window.close();
+                        break;
+                    default:
+                        break;
+                    }
+                default:
+                    break;
+                }
+            }
+
+            window.setView(view);
+            window.clear(backgroudColor); // Color background
+            for (auto x : *boxes)
+                x->draw(window);
+            window.display();
+        }
+    }
+
 
     for (auto p : *boxes)
         delete p;
     boxes->clear();
-    delete boxes;
-
+    delete boxes;;
     return 0;
+
+    
+
+    //while (window.isOpen() && !close)
+    //{
+    //    
+    //    while (window.pollEvent(event))
+    //    {
+
+    //        if (event.type == sf::Event::MouseButtonPressed)
+    //        {
+    //            if (event.mouseButton.button == sf::Mouse::Left)
+    //            {
+    //                sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
+    //                sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
+    //                for (auto x : *boxes)
+    //                {
+    //                    sf::FloatRect rect(x->out.getPosition().x - (x->out.getSize().x/2), x->out.getPosition().y - (x->out.getSize().x / 2), x->out.getSize().x, x->out.getSize().y);
+    //                    if (rect.contains(worldPos))
+    //                        x->clicked(true);
+    //                        
+    //                }
+    //            }
+    //        }
+
+    //        switch (event.type)
+    //        {
+    //        case sf::Event::Closed:
+    //            window.close();
+    //            break;
+    //            
+    //        case sf::Event::Resized:
+    //            view.setSize(sf::Vector2f(static_cast<float>(event.size.width), static_cast<float>(event.size.height)));
+    //            for (auto x : *boxes)
+    //                x->resize(view.getSize());
+    //            break;
+
+    //        case sf::Event::KeyPressed:
+    //            switch (event.key.code)
+    //            {
+    //            case sf::Keyboard::Escape:
+    //                window.close();
+    //                break;
+    //                
+    //            case sf::Keyboard::R:
+    //                for (auto p : *boxes)
+    //                {
+    //                    p->active = false;
+    //                    p->updateColor();
+    //                }
+    //                break;
+
+    //            case sf::Keyboard::E:
+    //                for (auto p : *boxes)
+    //                    delete p;
+    //                boxes->clear();
+    //                noGen++;
+    //                {
+    //                    CheckBox* num1 = new CheckBox(boxes, view.getSize(), view.getCenter(), sf::Vector2i(0, 0), backgroudColor, 1, noGen);
+    //                    boxes->push_back(num1);
+
+    //                    for (int i = 0; i < noGen; i++)
+    //                        for (auto x : *boxes)
+    //                            if (x->generation == i)
+    //                                x->generateNextGen();
+    //                }
+
+    //                break;
+
+    //            case sf::Keyboard::Q:
+    //                for (auto p : *boxes)
+    //                    delete p;
+    //                boxes->clear();
+    //                if (noGen > 1)
+    //                    noGen--;
+    //                {
+    //                    CheckBox* num1 = new CheckBox(boxes, view.getSize(), view.getCenter(), sf::Vector2i(0, 0), backgroudColor, 1, noGen);
+    //                    boxes->push_back(num1);
+
+    //                    for (int i = 0; i < noGen; i++)
+    //                        for (auto x : *boxes)
+    //                            if (x->generation == i)
+    //                                x->generateNextGen();
+    //                }
+
+    //                break;
+
+    //            default:
+    //                break;
+    //            }
+
+    //        default:
+    //            break;
+    //        }
+    //        if (event.type == sf::Event::Closed)
+    //            window.close();
+    //    }
+    //    deltaTime = deltaClock.restart().asSeconds();
+    //    win = true;
+    //    for (auto x : *boxes)
+    //        if (!x->active)
+    //            win = false;
+    //    
+    //    window.setView(view);
+    //    window.clear(backgroudColor); // Color background
+    //    for (auto x : *boxes)
+    //    {
+    //        if (win)
+    //            if (x->sinAnim(deltaTime))
+    //                close = true;
+    //        x->draw(window);
+    //    }
+    //    window.display();
+    //}
+
+    //for (auto p : *boxes)
+    //    delete p;
+    //boxes->clear();
+    //delete boxes;
+
+    //return 0;
 }
 
 /*
