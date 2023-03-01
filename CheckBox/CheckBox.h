@@ -56,6 +56,6 @@ public:
 	void updatePosSize();
 	void updateColor();
 
-	bool sinAnim(float deltatime);
+	bool animation(float deltatime);
 };
 

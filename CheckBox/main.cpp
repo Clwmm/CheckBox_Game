@@ -174,7 +174,7 @@ int main()
         for (auto x : *boxes)
         {
             if (win)
-                if (x->sinAnim(deltaTime))
+                if (x->animation(deltaTime))
                     close = true;
             x->draw(window);
         }

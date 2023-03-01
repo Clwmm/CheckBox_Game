@@ -222,7 +222,7 @@ void Game::game()
         for (auto x : *boxes)
         {
             if (win)
-                endAnim = x->sinAnim(deltaTime);
+                endAnim = x->animation(deltaTime);
             x->draw(*window);
         }
         window->display();

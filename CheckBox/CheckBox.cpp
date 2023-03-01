@@ -489,7 +489,7 @@ void CheckBox::updateColor()
 	}
 }
 
-bool CheckBox::sinAnim(float deltatime)
+bool CheckBox::animation(float deltatime)
 {
 	if (sinDouble <= 2.355)
 	{
