@@ -20,6 +20,60 @@ Iter select_randomly(Iter start, Iter end) {
     return select_randomly(start, end, gen);
 }
 
+class LastSave
+{
+    int vecMax = 50;
+    int noVec = 0;
+    int vecIte = 0;
+
+    std::vector<CheckBox> tempVec;
+    std::vector<std::vector<CheckBox>> lastStates;
+
+public:
+
+    void push(std::vector<CheckBox*> a)
+    {
+        if (noVec < vecMax)
+        {
+            tempVec.clear();
+            for (auto i : a)
+                tempVec.push_back(*i);
+            lastStates.push_back(tempVec);
+            noVec++;
+            return;
+        }
+        else
+        {
+            lastStates.erase(lastStates.begin());
+
+            tempVec.clear();
+            for (auto i : a)
+                tempVec.push_back(*i);
+            lastStates.push_back(tempVec);
+
+            return;
+        }
+    }
+    void munisIte()
+    {
+        if (vecIte > 0)
+            vecIte--;
+    }
+    void plusIte()
+    {
+        if (vecIte < vecMax - 1)
+            vecIte++;
+    }
+
+    void render(sf::RenderWindow& window)
+    {
+        if (noVec < vecMax)
+            vecMax = noVec;
+        for (auto x : lastStates[vecIte])
+            x.draw(window);
+    }
+};
+
 int main()
 {
     sf::Vector2f screenSize = sf::Vector2f(800, 800);
@@ -47,6 +101,8 @@ int main()
         for (auto x : *boxes)
             if (x->generation == i)
                 x->generateNextGen();
+
+    LastSave save;
 
     sf::Clock deltaClock;
     float deltaTime = 0;
@@ -129,7 +185,7 @@ int main()
     else
     {
         while (!close)
-    {
+        {
         time += deltaClock.restart().asSeconds();
         CheckBox* rand = *select_randomly(boxes->begin(), boxes->end());
         rand->clicked(true);
@@ -138,10 +194,11 @@ int main()
         for (auto x : *boxes)
             if (!x->active)
                 win = false;
+        save.push(*boxes);
         iter++;
         if (win)
             close = true;
-    }
+        }
         std::cout << "Time: " << time << " s" << std::endl;
         std::cout << "Nr iter: " << iter << std::endl;
 
@@ -178,6 +235,15 @@ int main()
                     case sf::Keyboard::Escape:
                         window.close();
                         break;
+
+                    case sf::Keyboard::Q:
+                        save.munisIte();
+                        break;
+
+                    case sf::Keyboard::E:
+                        save.plusIte();
+                        break;
+
                     default:
                         break;
                     }
@@ -188,8 +254,12 @@ int main()
 
             window.setView(view);
             window.clear(backgroudColor); // Color background
-            for (auto x : *boxes)
-                x->draw(window);
+
+            save.render(window);
+
+            /*for (auto x : *boxes)
+                x->draw(window);*/
+
             window.display();
         }
     }
@@ -198,8 +268,18 @@ int main()
     for (auto p : *boxes)
         delete p;
     boxes->clear();
-    delete boxes;;
+    delete boxes;
     return 0;
+
+
+
+    /*
+    1 mil iterations:
+        - 1st save algo - 42.1238 s
+        - 2nd save algo - 19.5178 s
+        - 3rd save algo - 18.9477 s
+    
+    */
 
     
 
