@@ -39,7 +39,9 @@ public:
             for (auto i : a)
                 tempVec.push_back(*i);
             lastStates.push_back(tempVec);
+            
             noVec++;
+            
             return;
         }
         else
@@ -65,7 +67,7 @@ public:
             vecIte++;
     }
 
-    void render(sf::RenderWindow& window)
+    void draw(sf::RenderWindow& window)
     {
         if (noVec < vecMax)
             vecMax = noVec;
@@ -255,7 +257,7 @@ int main()
             window.setView(view);
             window.clear(backgroudColor); // Color background
 
-            save.render(window);
+            save.draw(window);
 
             /*for (auto x : *boxes)
                 x->draw(window);*/
